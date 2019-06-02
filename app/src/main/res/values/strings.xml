@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">你好繁</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_search">Search</string>
+
+    <!--drawer navigation title-->
+    <string name="nav_home">主页</string>
+    <string name="nav_s2t">一简对多繁</string>
+
+    <string name="jump_s2t">开始学习</string>
+
+    <string name="nav_t2s">一繁对多简</string>
+    <string name="nav_reading">阅读</string>
+    <string name="nav_history">历史</string>
+    <string name="nav_setting">设置</string>
+
+</resources>
