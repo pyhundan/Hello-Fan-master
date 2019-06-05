@@ -6,6 +6,7 @@ package com.test.fan;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -13,6 +14,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -56,16 +58,14 @@ public class LearnS2TActivity extends AppCompatActivity {
         setContentView(R.layout.activity_learn_s2t);
 
         findAllView();
-
         dbHelper=new DBHelper(this);
+
+        setShare();
 
         //存放繁体字
         ArrayList<String> T_List=getBtnContentList();
-
         generateBtnList(T_List);
-
         generateS_TextList(S_List);
-
         search_words(T_List);
 
     }
@@ -104,16 +104,13 @@ public class LearnS2TActivity extends AppCompatActivity {
             String s=cursor.getString(cursor.getColumnIndex("simple"));
             String rt=cursor.getString(cursor.getColumnIndex("t"));
 
-
-            //System.out.println(s+"+"+tr);
             R_List.add(rt);
-            S_List.add(s);
+            S_List.add(s+"→"+tr.replace(';',','));
             List.add(tr);
 
         }
 
         Right_text=R_List.get(flag1).toString();
-        System.out.println(Right_text+"正确的");
 
         for (int index=0;index<List.get(flag1).toString().length();index++)
         {
@@ -122,11 +119,7 @@ public class LearnS2TActivity extends AppCompatActivity {
             //System.out.println(temp.charAt(index));
             btnContentList.add(String.valueOf(temp.charAt(index)));
         }
-
-
-
         flag1++;
-
         return btnContentList;
     }
 
@@ -155,6 +148,7 @@ public class LearnS2TActivity extends AppCompatActivity {
         int index=0;
         for(String btnContent : btnContentList)
         {
+
             Button codeBtn=new Button(this);
             setBtnAttribute( codeBtn, btnContent, index, Color.TRANSPARENT, Color.BLACK, 24 );
             mBtnListLayout.addView( codeBtn );
@@ -175,7 +169,14 @@ public class LearnS2TActivity extends AppCompatActivity {
         codeBtn.setTextSize( ( textSize > 16 )?textSize:24 );
         codeBtn.setId( id );
 
-        codeBtn.setText( btnContent );
+        codeBtn.setBackgroundResource(R.drawable.shape_button);
+
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        codeBtn.setWidth(dm.widthPixels);
+
+
+        codeBtn.setText( String.valueOf(id+1)+"."+btnContent );
 
         codeBtn.setGravity( Gravity.CENTER );
 
@@ -186,7 +187,6 @@ public class LearnS2TActivity extends AppCompatActivity {
                 if(btnContent.equals(Right_text))
                 {
                     showRightDialog();
-                    //存放繁体字
                 }
                 else{
                     showErrorDialog();
@@ -228,6 +228,11 @@ public class LearnS2TActivity extends AppCompatActivity {
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+
+                        SharedPreferences userSettings = getSharedPreferences("setting", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = userSettings.edit();
+                        editor.putInt("flag",flag1);
+                        editor.commit();
 
                         ArrayList<String> T_List=getBtnContentList();
 
@@ -275,13 +280,13 @@ public class LearnS2TActivity extends AppCompatActivity {
 
             String tr="",s="";
             sqLiteDatabase = dbHelper.getReadableDatabase();
-            System.out.println(Right_text+"----------");
+
             Cursor cursor = sqLiteDatabase.rawQuery("select * from dict where words like '%" + Right_text + "%'", null);
             if (cursor.getCount()==0)
             {
                 //System.out.println("空");
-                setW_textview("不存在组词");
-                setE_textview("请选择"+Right_text);
+                setW_textview("\""+Right_text+"\""+"在繁体中不存在组词");
+                setE_textview("请选择"+"\""+Right_text+"\"");
 
             }
             else{
@@ -290,7 +295,6 @@ public class LearnS2TActivity extends AppCompatActivity {
                     tr = cursor.getString(cursor.getColumnIndex("words"));
 
                     s=cursor.getString(cursor.getColumnIndex("express"));
-
 
                 }
                 tr=tr.replaceFirst(Right_text,"__");
@@ -302,7 +306,24 @@ public class LearnS2TActivity extends AppCompatActivity {
 
 
     }
+    private void setShare()
+    {
+        SharedPreferences userSettings = getSharedPreferences("setting", MODE_PRIVATE);
+        SharedPreferences.Editor editor = userSettings.edit();
 
+        int result = userSettings.getInt("flag", 0);
+
+        if (result==0)
+        {
+            editor.putInt("flag", 0);
+        }
+        else
+        {
+            flag1=flag2=result;
+
+        }
+
+    }
     protected void onRestart() {
         super.onRestart();
     }

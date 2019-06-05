@@ -4,6 +4,7 @@
 package com.test.fan;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,12 +14,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import static android.content.Context.MODE_PRIVATE;
+
 
 public class S2TFragment extends Fragment  {
 
 
     private static Button jum_bt;
-
+    private int flag=0;
 
     public S2TFragment() {}
 
@@ -40,6 +43,7 @@ public class S2TFragment extends Fragment  {
 
         @Override
         public void onClick(View v) {
+
 
             Intent intent = new Intent();
             intent.setClass(getActivity(), LearnS2TActivity.class);
